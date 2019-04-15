@@ -1,0 +1,140 @@
+version: '3'
+services:
+
+###--- Lychee Setup ---###
+   lychee:
+     container_name: lychee
+     image: linuxserver/lychee:latest
+#     env_file:
+#       - ./secrets.env
+     volumes:
+       - /opt/appdata/lychee/config:/config
+#        - lychee_pictures:/pictures
+#        - /mnt/lychee:/pictures
+       - pictures:/pictures
+       - /etc/localtime:/etc/localtime:ro
+     restart: always
+     environment:
+       PUID: 1000
+       PGID: 1000
+       TZ: American/Los_Angeles
+     labels:
+       traefik.enable: "true"
+       traefik.frontend.redirect.entryPoint: "https"
+       traefik.frontend.rule: "Host:lychee.wooster.xyz"
+       traefik.port: "80"
+       traefik.docker.network: "plexguide"
+     ports:
+       - 9413:80
+     networks:
+  #     - homeassistant
+       - plexguide
+
+###--- Node-red Setup ---###
+#  nodered:
+#    build: ./image
+#    container_name: nodered
+#    image: node-red-docker:v8
+#    volumes:
+#      - /opt/appdata/nodered/data:/data
+#      - /opt/appdata/nodered/node_modules:/node_app/node_modules
+#      - /etc/localtime:/etc/localtime:ro
+#    restart: always
+#    environment:
+#      - PUID=1000
+#      - GUID=1000
+#    labels:
+#      traefik.enable: "true"
+#      traefik.frontend.redirect.entryPoint: "https"
+#      traefik.frontend.rule: "Host:nodered.wooster.xyz"
+#      traefik.port: "1880"
+#      traefik.docker.network: "plexguide"
+#    ports:
+#      - 1880:1880
+#    networks:
+#      - homeassistant
+#      - plexguide
+
+###--- MariaDb Setup ---###
+   mariadb_lychee:
+     container_name: mariadb_lychee
+     image: mariadb
+     env_file:
+       - ./secrets.env
+     volumes:
+       - /opt/appdata/mariadb_lychee/lib/mysql:/var/lib/mysql
+       - /etc/localtime:/etc/localtime:ro
+     restart: always
+     environment:
+#       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+       MYSQL_DATABASE: "lychee"
+#       MYSQL_USER: ${USER}
+#       MYSQL_PASSWORD: ${USER_PASSWORD}
+     networks:
+       - plexguide
+#      - homeassistant
+
+###--- mosquitto Setup ---###
+  # mosquitto:
+  #   container_name: mosquitto
+  #   image: eclipse-mosquitto
+  #   volumes:
+  #     - mosquitto_config:/mosquitto/config
+  #     - mosquitto_data:/mosquitto/data
+  #     - mosquitto_log:/mosquitto/log
+  #     - /opt/appdata/mosquitto/mosquitto.conf:/mosquitto/mosquitto.conf
+  #   restart: always
+  #   environment:
+  #     - PUID=1000
+  #     - GUID=1000
+#    labels:
+#      traefik.enable: "true"
+#      traefik.frontend.redirect.entryPoint: "https"
+#      traefik.frontend.rule: "Host:mqtt.wooster.xyz"
+#      traefik.port: "1883"
+    # ports:
+    #   - 1883:1883
+    #   - 9001:9001
+    # networks:
+    #   - homeassistant
+
+###--- TasmoAdmin Setup ---###
+#  tasmoadmin:
+#    container_name: tasmoadmin
+#    image: raymondmm/tasmoadmin
+#    volumes:
+#      - /opt/appdata/tasmoadmin/data:/data
+#    environment:
+#      - PUID=1000
+#      - GUID=1000
+#    labels:
+#      traefik.enable: "true"
+#      traefik.frontend.redirect.entryPoint: "https"
+#      traefik.frontend.rule: "Host:tasmoadmin.wooster.xyz"
+#      traefik.port: "80"
+#      traefik.docker.network: "plexguide"
+#    networks:
+#      - homeassistant
+#      - plexguide
+
+volumes:
+  pictures:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=10.46.119.45,rw"
+      device: ":/export/media/lychee"
+ #  lychee_pictures:
+#   noderedmodules:
+#   mariadb:
+#   mosquitto_config:
+#   mosquitto_data:
+#   mosquitto_log:
+#   tasmoconfig:
+
+networks:
+#  homeassistant:
+#    driver: bridge
+  plexguide:
+    external:
+      name: plexguide
