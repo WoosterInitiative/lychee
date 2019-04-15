@@ -27,33 +27,7 @@ services:
      ports:
        - 9413:80
      networks:
-  #     - homeassistant
        - plexguide
-
-###--- Node-red Setup ---###
-#  nodered:
-#    build: ./image
-#    container_name: nodered
-#    image: node-red-docker:v8
-#    volumes:
-#      - /opt/appdata/nodered/data:/data
-#      - /opt/appdata/nodered/node_modules:/node_app/node_modules
-#      - /etc/localtime:/etc/localtime:ro
-#    restart: always
-#    environment:
-#      - PUID=1000
-#      - GUID=1000
-#    labels:
-#      traefik.enable: "true"
-#      traefik.frontend.redirect.entryPoint: "https"
-#      traefik.frontend.rule: "Host:nodered.wooster.xyz"
-#      traefik.port: "1880"
-#      traefik.docker.network: "plexguide"
-#    ports:
-#      - 1880:1880
-#    networks:
-#      - homeassistant
-#      - plexguide
 
 ###--- MariaDb Setup ---###
    mariadb_lychee:
@@ -72,50 +46,6 @@ services:
 #       MYSQL_PASSWORD: ${USER_PASSWORD}
      networks:
        - plexguide
-#      - homeassistant
-
-###--- mosquitto Setup ---###
-  # mosquitto:
-  #   container_name: mosquitto
-  #   image: eclipse-mosquitto
-  #   volumes:
-  #     - mosquitto_config:/mosquitto/config
-  #     - mosquitto_data:/mosquitto/data
-  #     - mosquitto_log:/mosquitto/log
-  #     - /opt/appdata/mosquitto/mosquitto.conf:/mosquitto/mosquitto.conf
-  #   restart: always
-  #   environment:
-  #     - PUID=1000
-  #     - GUID=1000
-#    labels:
-#      traefik.enable: "true"
-#      traefik.frontend.redirect.entryPoint: "https"
-#      traefik.frontend.rule: "Host:mqtt.wooster.xyz"
-#      traefik.port: "1883"
-    # ports:
-    #   - 1883:1883
-    #   - 9001:9001
-    # networks:
-    #   - homeassistant
-
-###--- TasmoAdmin Setup ---###
-#  tasmoadmin:
-#    container_name: tasmoadmin
-#    image: raymondmm/tasmoadmin
-#    volumes:
-#      - /opt/appdata/tasmoadmin/data:/data
-#    environment:
-#      - PUID=1000
-#      - GUID=1000
-#    labels:
-#      traefik.enable: "true"
-#      traefik.frontend.redirect.entryPoint: "https"
-#      traefik.frontend.rule: "Host:tasmoadmin.wooster.xyz"
-#      traefik.port: "80"
-#      traefik.docker.network: "plexguide"
-#    networks:
-#      - homeassistant
-#      - plexguide
 
 volumes:
   pictures:
@@ -123,18 +53,9 @@ volumes:
     driver_opts:
       type: "nfs"
       o: "addr=10.46.119.45,rw"
-      device: ":/export/media/lychee"
- #  lychee_pictures:
-#   noderedmodules:
-#   mariadb:
-#   mosquitto_config:
-#   mosquitto_data:
-#   mosquitto_log:
-#   tasmoconfig:
+      device: ":/export/media"
 
 networks:
-#  homeassistant:
-#    driver: bridge
   plexguide:
     external:
       name: plexguide
